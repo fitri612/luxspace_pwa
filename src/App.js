@@ -1,4 +1,5 @@
 import React from 'react';
+import Arrived from './components/Arrived.js';
 import Browse from './components/Browse.js';
 import Header from './components/Header.js';
 import Hero from './components/Hero.js';
@@ -10,6 +11,7 @@ function App() {
       <Header/>
       <Hero/>
       <Browse/>
+      <Arrived/>
     </>
   );
 }

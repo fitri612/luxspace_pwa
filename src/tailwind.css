@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -44,16 +44,30 @@
 
 .overlay .video {
   @apply absolute transform bg-blue-200 bg-no-repeat bg-center w-20 h-20 rounded-full items-center justify-center flex -translate-x-1/2 -translate-y-1/2;
-  background-image: url("./images/content/icon-play.svg#icon-play");
+  background-image: url('./images/content/icon-play.svg#icon-play');
   top: 50%;
   left: 50%;
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (min-width: 768px) {
+  .hero .hero-image,
+  .hero .hero-caption {
+    min-height: auto;
+  }
+
+  .hero .hero-cta {
+    @apply w-12 h-12;
+    transform: translateX(-50%) translateY(-50%);
+    background-size: 37.5%;
+  }
+}
+
+@media only screen and (min-width: 320px) and (max-width: 767px) {
   .hero .hero-image,
   .hero .hero-caption {
     min-height: 90vh;
   }
+
   .hero .hero-cta {
     @apply w-12 h-12;
     transform: translateX(-75px) translateY(-50%);
@@ -68,7 +82,7 @@ ul.breadcrumb {
 }
 
 ul.breadcrumb li:not(:last-child):after {
-  content: "/";
+  content: '/';
   @apply px-4;
 }
 
@@ -91,18 +105,18 @@ ul.breadcrumb li:last-child a {
 }
 
 .slider .thumbnail .item {
-  @apply rounded bg-gray-100 relative rounded-lg mb-4 cursor-pointer;
+  @apply bg-gray-100 relative rounded-lg mb-4 cursor-pointer;
   width: 106px;
   height: 106px;
 }
 
 .slider .thumbnail .item:after {
-  content: "";
+  content: '';
   @apply transition duration-200 absolute inset-0 bg-black bg-opacity-0 border-2 border-black border-opacity-0 rounded-lg;
 }
 
 .slider .thumbnail .item.selected:after {
-  content: "";
+  content: '';
   @apply bg-opacity-25 border-opacity-100;
 }
 
@@ -134,4 +148,21 @@ a.cart.cart-filled svg g circle.dot {
 
 button[disabled] {
   @apply bg-gray-300 hover:bg-gray-300 text-gray-400 hover:text-gray-400 cursor-not-allowed;
+}
+
+.cart-photo {
+  width: 90px;
+  height: 90px;
+}
+
+@screen xsm {
+  ul.breadcrumb li:not(:last-child):after {
+    content: '/';
+    @apply px-2;
+  }
+
+  .cart-photo {
+    width: 70px;
+    height: 70px;
+  }
 }

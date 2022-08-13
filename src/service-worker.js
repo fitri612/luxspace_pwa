@@ -43,14 +43,16 @@ registerRoute(
 
     return true;
   },
-  createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
+  createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html'),
 );
 
 // An example runtime caching route for requests that aren't handled by the
 // precache, in this case same-origin .png requests like those from in public/
 registerRoute(
   // Add in any other file extensions or routing criteria as needed.
-  ({ url }) => url.origin === self.location.origin && /\.(jpe?g|png|svg|ico)$/i.test(url.pathname), // Customize this strategy as needed, e.g., by changing to CacheFirst.
+  ({ url }) =>
+    url.origin === self.location.origin &&
+    /\.(jpe?g|png|svg|ico)$/i.test(url.pathname), // Customize this strategy as needed, e.g., by changing to CacheFirst.
   new StaleWhileRevalidate({
     cacheName: 'images',
     plugins: [
@@ -58,33 +60,61 @@ registerRoute(
       // least-recently used images are removed.
       new ExpirationPlugin({ maxEntries: 50 }),
     ],
-  })
+  }),
 );
 
-registerRoute(({url}) => url.origin === 'https://fonts.googleapis.com' || url.origin === 'https://fonts.gstatic.com', new NetworkFirst({
-  cacheName: 'google-fonts-cache',
-  plugins: [
-    new ExpirationPlugin({
-      maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-      maxEntries: 30
-    })
-  ]
-}))
+registerRoute(
+  ({ url }) =>
+    url.origin === 'https://fonts.googleapis.com' ||
+    url.origin === 'https://fonts.gstatic.com',
+  new NetworkFirst({
+    cacheName: 'fonts',
+    plugins: [
+      new ExpirationPlugin({
+        maxAgeSeconds: 60 * 60 * 24 * 336,
+        maxEntries: 30,
+      }),
+    ],
+  }),
+);
 
-self.addEventListener('install', function(event) {
-  console.log("SW Install");
+registerRoute(
+  ({ url }) => url.origin.includes('qorebase.io'),
+  new NetworkFirst({
+    cacheName: 'apidata',
+    plugins: [
+      new ExpirationPlugin({
+        maxAgeSeconds: 360,
+        maxEntries: 30,
+      }),
+    ],
+  }),
+);
 
-  const asyncInstall = new Promise((resolve, reject) => {
-    console.log("SW Install Promise");
-    setTimeout(resolve, 5000);
-    })
+registerRoute(
+  ({ url }) => /\.(jpe?g|png)$/i.test(url.pathname),
+  new StaleWhileRevalidate({
+    cacheName: 'apiimage',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 30,
+      }),
+    ],
+  }),
+);
+
+self.addEventListener('install', (event) => {
+  console.log('SW Install');
+
+  const asyncInstall = new Promise((resolve) => {
+    console.log('Waiting install to finish ...');
+    setTimeout(resolve, 3000);
+  });
 
   event.waitUntil(asyncInstall);
 });
-
-
-self.addEventListener('activate', function(event){
-  console.log("SW Activate"); 
+self.addEventListener('activate', (event) => {
+  console.log('SW Activate');
 });
 
 // This allows the web app to trigger skipWaiting via
@@ -93,6 +123,15 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
+});
+
+self.addEventListener('push', (event) => {
+  event.waitUntil(
+    self.registration.showNotification('Luxspace', {
+      icon: './icon-120.png',
+      body: event.data.text(),
+    }),
+  );
 });
 
 // Any other custom service worker logic can go here.
